@@ -4,6 +4,8 @@ import { Form, InputNumber, Popconfirm, Table, Typography, Input } from 'antd';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
+import { ToastContainer } from 'react-toastify';
 
 const EditableCell = ({
     editing,
@@ -15,7 +17,7 @@ const EditableCell = ({
     children,
     ...restProps
 }) => {
-    console.log({ dataIndex, title });
+
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
         <td {...restProps}>
@@ -46,7 +48,6 @@ export default function Dashboard() {
     const [data, setData] = useState([]);
     const [editingKey, setEditingKey] = useState('');
 
-
     useEffect(() => {
         const getAllRecords = async () => {
             const resp = await axios.get('/api/report')
@@ -61,12 +62,29 @@ export default function Dashboard() {
             bp: '',
             pulse: '',
             weight: '',
+            spo2: '',
             date: '',
             ...record,
         });
         setEditingKey(record._id);
     };
 
+    const deleteRow = async (record) => {
+        let newData = [...data];
+        newData = newData.filter(row => row._id !== record._id);
+        setData(newData);
+        await axios.delete(`/api/report?id=${record._id}`)
+        toast.error('🦄 Record deleted !', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
     const cancel = () => {
         setEditingKey('');
     };
@@ -114,6 +132,12 @@ export default function Dashboard() {
             editable: true,
         },
         {
+            title: 'Spo2',
+            dataIndex: 'spo2',
+            width: '10%',
+            editable: true,
+        },
+        {
             title: 'Date',
             dataIndex: 'createdAt',
             width: '20%',
@@ -139,9 +163,14 @@ export default function Dashboard() {
                         </Popconfirm>
                     </span>
                 ) : (
-                    <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-                        Edit
-                    </Typography.Link>
+                    <span>
+                        <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+                            <EditTwoTone />
+                        </Typography.Link>
+                        <Typography.Link disabled={editingKey !== ''} onClick={() => deleteRow(record)} style={{ marginLeft: "10px" }}>
+                            <DeleteTwoTone twoToneColor="#eb2f96" />
+                        </Typography.Link>
+                    </span>
                 );
             },
         },
@@ -163,6 +192,7 @@ export default function Dashboard() {
     });
     return (
         <>
+            <ToastContainer />
             <Form form={form} component={false}>
                 <Table
                     components={{

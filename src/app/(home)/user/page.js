@@ -47,20 +47,20 @@ const tailFormItemLayout = {
 const Home = () => {
     const [form] = Form.useForm();
     const [createdAt, setCreatedAt] = useState(new Date());
-    const [isSent, setIsSent] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const router = useRouter();
     useEffect(() => {
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         });
-        if (isSent) {
+        if (isSending) {
             setTimeout(() => {
-                setIsSent(false)
+                setIsSending(false)
                 router.push('/user/dashboard')
             }, 5000);
         }
-    }, [isSent])
+    }, [isSending])
 
     const onFinish = async (values) => {
         const body = {
@@ -71,6 +71,7 @@ const Home = () => {
             "spo2": values.spo2
         }
         try {
+            setIsSending(true)
             await axios.post('/api/report', body);
             toast('🦄 Record saved !', {
                 position: "top-right",
@@ -81,11 +82,8 @@ const Home = () => {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
-                });
-            setIsSent(true);
+            });
             form.resetFields();
-
-
         } catch (error) {
             console.log(error)
         }
@@ -109,7 +107,7 @@ const Home = () => {
                 }}
                 scrollToFirstError
             >
-                <Row>
+                <Row className='pressure'>
                     <Col span={12}>
                         <Form.Item
                             name="systolic"
@@ -157,12 +155,6 @@ const Home = () => {
                 <Form.Item
                     name="spo2"
                     label="Spo2"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input your Spo2!'
-                        },
-                    ]}
                 >
                     <InputNumber style={{ width: "100%" }} />
                 </Form.Item>
@@ -170,12 +162,6 @@ const Home = () => {
                 <Form.Item
                     name="weight"
                     label="Weight"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please select your habitual weight!',
-                        },
-                    ]}
                 >
                     <InputNumber style={{ width: "100%" }} addonAfter="Kg" />
                 </Form.Item>
@@ -197,14 +183,15 @@ const Home = () => {
                     />
                 </Form.Item>
 
-
                 <Form.Item {...tailFormItemLayout}>
-                    <Button type="primary" htmlType="submit">
-                        Save Record
+                    <Button type="primary" htmlType="submit" disabled={isSending}>
+                        {
+                            isSending ? "PLease wait ..." : "Save Record"
+                        }
                     </Button>
                 </Form.Item>
             </Form>
-        
+
         </>
     );
 };
