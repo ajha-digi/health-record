@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const formItemLayout = {
     labelCol: {
@@ -47,7 +48,7 @@ const Home = () => {
     const [form] = Form.useForm();
     const [createdAt, setCreatedAt] = useState(new Date());
     const [isSent, setIsSent] = useState(false);
-
+    const router = useRouter();
     useEffect(() => {
         window.scrollTo({
             top: 0,
@@ -56,6 +57,7 @@ const Home = () => {
         if (isSent) {
             setTimeout(() => {
                 setIsSent(false)
+                router.push('/user/dashboard')
             }, 5000);
         }
     }, [isSent])
@@ -82,6 +84,7 @@ const Home = () => {
                 });
             setIsSent(true);
             form.resetFields();
+
 
         } catch (error) {
             console.log(error)

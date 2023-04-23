@@ -14,7 +14,7 @@ export const createReport = async (req) => {
 // get all reports
 export const getReports = async () => {
     try {
-        const reports = await Report.find({});
+        const reports = await Report.find({}).sort({ createdAt: -1 });
         return reports;
     } catch (error) {
         return error.message;

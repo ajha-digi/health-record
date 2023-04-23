@@ -3,6 +3,7 @@ import { formatDate } from '@/helper';
 import { Form, InputNumber, Popconfirm, Table, Typography, Input } from 'antd';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 const EditableCell = ({
     editing,
@@ -14,7 +15,7 @@ const EditableCell = ({
     children,
     ...restProps
 }) => {
-    console.log({dataIndex, title});
+    console.log({ dataIndex, title });
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
         <td {...restProps}>
@@ -40,7 +41,7 @@ const EditableCell = ({
     );
 };
 
-const Dashboard = () => {
+export default function Dashboard() {
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [editingKey, setEditingKey] = useState('');
@@ -97,7 +98,7 @@ const Dashboard = () => {
         {
             title: 'Bp',
             dataIndex: 'bp',
-            width: '15%',
+            width: '25%',
             editable: true,
         },
         {
@@ -161,20 +162,23 @@ const Dashboard = () => {
         };
     });
     return (
-        <Form form={form} component={false}>
-            <Table
-                components={{
-                    body: {
-                        cell: EditableCell,
-                    },
-                }}
-                pagination={false} 
-                bordered
-                dataSource={data}
-                columns={mergedColumns}
-                rowClassName="editable-row"
-            />
-        </Form>
+        <>
+            <Form form={form} component={false}>
+                <Table
+                    components={{
+                        body: {
+                            cell: EditableCell,
+                        },
+                    }}
+                    pagination={false}
+                    bordered
+                    dataSource={data}
+                    columns={mergedColumns}
+                    rowClassName="editable-row"
+                />
+            </Form>
+            <Link href="/user/visual">Visuals</Link>
+        </>
+
     );
 };
-export default Dashboard;
